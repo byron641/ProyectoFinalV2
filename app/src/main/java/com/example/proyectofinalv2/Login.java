@@ -1,14 +1,14 @@
 package com.example.proyectofinalv2;
 
-import android.os.Bundle;
-
 import android.content.Intent;
+import android.database.Cursor;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -19,6 +19,8 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.button.MaterialButton; // Asegúrate de importar este
+
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
@@ -31,15 +33,21 @@ public class Login extends AppCompatActivity {
     private static final int RC_SIGN_IN = 9001;
     private GoogleSignInClient mGoogleSignInClient;
     private FirebaseAuth mAuth;
+    private MyDatabaseHelper dbHelper;
+    private EditText userEditText;
+    private EditText passwordEditText;
+    private MaterialButton loginButton; // Actualiza el tipo de botón
+    private MaterialButton googleSignInButton; // Actualiza el tipo de botón
+    private FloatingActionButton createUserButton; // Actualiza el tipo de botón
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_login);
 
         mAuth = FirebaseAuth.getInstance();
 
+        // Configuración de Google Sign-In
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
                 .requestEmail()
@@ -47,16 +55,46 @@ public class Login extends AppCompatActivity {
 
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
 
-        Button SignInButton = findViewById(R.id.BtnGoogleSign);
-        SignInButton.setOnClickListener(new View.OnClickListener() {
+        // Inicialización del Helper de la base de datos
+        dbHelper = new MyDatabaseHelper(this);
+
+        // Inicialización de los elementos de la interfaz
+        userEditText = findViewById(R.id.Usertxt);
+        passwordEditText = findViewById(R.id.PasswordTxt);
+        loginButton = findViewById(R.id.BtnLogin); // Asegúrate de que el ID sea correcto
+        googleSignInButton = findViewById(R.id.BtnGoogleSign); // Asegúrate de que el ID sea correcto
+        createUserButton = findViewById(R.id.BtnCreateUser); // Asegúrate de que el ID sea correcto
+
+        // Configuración del botón de inicio de sesión local
+        loginButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String username = userEditText.getText().toString().trim();
+                String password = passwordEditText.getText().toString().trim();
+
+                Cursor cursor = dbHelper.getUser(username, password);
+                if (cursor.getCount() > 0) {
+                    Toast.makeText(Login.this, "Login exitoso", Toast.LENGTH_SHORT).show();
+                    // Aquí puedes ir a otra Activity o realizar otras acciones
+                    Intent intent = new Intent(Login.this, MainActivity.class);
+                    startActivity(intent);
+                } else {
+                    Toast.makeText(Login.this, "Usuario o contraseña incorrectos", Toast.LENGTH_SHORT).show();
+                }
+                cursor.close();
+            }
+        });
+
+        // Configuración del botón de inicio de sesión con Google
+        googleSignInButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 signOutAndSignIn();
             }
         });
 
-        FloatingActionButton createUserBtn = findViewById(R.id.BtnCreateUser);
-        createUserBtn.setOnClickListener(new View.OnClickListener() {
+        // Configuración del botón para crear un nuevo usuario
+        createUserButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent create = new Intent(Login.this, Create.class);
@@ -75,12 +113,12 @@ public class Login extends AppCompatActivity {
     }
 
     private void SignIn() {
-        Intent SignInIntent = mGoogleSignInClient.getSignInIntent();
-        startActivityForResult(SignInIntent, RC_SIGN_IN);
+        Intent signInIntent = mGoogleSignInClient.getSignInIntent();
+        startActivityForResult(signInIntent, RC_SIGN_IN);
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == RC_SIGN_IN) {
@@ -112,4 +150,3 @@ public class Login extends AppCompatActivity {
                 });
     }
 }
-
