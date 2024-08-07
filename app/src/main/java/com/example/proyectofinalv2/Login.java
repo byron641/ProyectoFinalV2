@@ -36,9 +36,9 @@ public class Login extends AppCompatActivity {
     private MyDatabaseHelper dbHelper;
     private EditText userEditText;
     private EditText passwordEditText;
-    private MaterialButton loginButton; // Actualiza el tipo de botón
-    private MaterialButton googleSignInButton; // Actualiza el tipo de botón
-    private FloatingActionButton createUserButton; // Actualiza el tipo de botón
+    private MaterialButton loginButton; // boton de inicio de sesion local
+    private MaterialButton googleSignInButton; //boton de inicio de google funciona
+    private FloatingActionButton createUserButton; // boton de crear usuario // ya funciona
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,7 +47,6 @@ public class Login extends AppCompatActivity {
 
         mAuth = FirebaseAuth.getInstance();
 
-        // Configuración de Google Sign-In
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
                 .requestEmail()
@@ -61,9 +60,9 @@ public class Login extends AppCompatActivity {
         // Inicialización de los elementos de la interfaz
         userEditText = findViewById(R.id.Usertxt);
         passwordEditText = findViewById(R.id.PasswordTxt);
-        loginButton = findViewById(R.id.BtnLogin); // Asegúrate de que el ID sea correcto
-        googleSignInButton = findViewById(R.id.BtnGoogleSign); // Asegúrate de que el ID sea correcto
-        createUserButton = findViewById(R.id.BtnCreateUser); // Asegúrate de que el ID sea correcto
+        loginButton = findViewById(R.id.BtnLogin);
+        googleSignInButton = findViewById(R.id.BtnGoogleSign);
+        createUserButton = findViewById(R.id.BtnCreateUser);
 
         // Configuración del botón de inicio de sesión local
         loginButton.setOnClickListener(new View.OnClickListener() {
@@ -75,7 +74,6 @@ public class Login extends AppCompatActivity {
                 Cursor cursor = dbHelper.getUser(username, password);
                 if (cursor.getCount() > 0) {
                     Toast.makeText(Login.this, "Login exitoso", Toast.LENGTH_SHORT).show();
-                    // Aquí puedes ir a otra Activity o realizar otras acciones
                     Intent intent = new Intent(Login.this, MainActivity.class);
                     startActivity(intent);
                 } else {
@@ -85,7 +83,7 @@ public class Login extends AppCompatActivity {
             }
         });
 
-        // Configuración del botón de inicio de sesión con Google
+        //botón de inicio de sesión con Google
         googleSignInButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -93,7 +91,7 @@ public class Login extends AppCompatActivity {
             }
         });
 
-        // Configuración del botón para crear un nuevo usuario
+        //botón para crear un nuevo usuario
         createUserButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

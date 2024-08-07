@@ -5,6 +5,7 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -15,6 +16,7 @@ import androidx.core.content.ContextCompat;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.squareup.picasso.Picasso;
 
 import java.text.DecimalFormat;
 
@@ -29,11 +31,12 @@ public class MainActivity extends AppCompatActivity {
     private TextView textViewResult;
     private Button btnlocalizar;
     private Button btnGuardarId;
+    private ImageView imageViewWeather;
     private FusedLocationProviderClient fusedLocationClient;
     private static final String BASE_URL = "https://api.openweathermap.org/data/2.5/";
     private static final String API_KEY = "add213f2bd92e831f3f46b5c8504c3e8"; // API aún funciona
     private static final int LOCATION_REQUEST_CODE = 101;
-    private static final String DEFAULT_CITY_ID = "3589626"; // ID de la ciudad por defecto
+    private static final String DEFAULT_CITY_ID = "3589626"; // ID de la ciudad
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
         textViewResult = findViewById(R.id.textViewResult);
         btnlocalizar = findViewById(R.id.BtnLocalizar);
         btnGuardarId = findViewById(R.id.BtnGuardarId);
+        imageViewWeather = findViewById(R.id.imageViewWeather);
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
         btnlocalizar.setOnClickListener(v -> {
@@ -93,7 +97,6 @@ public class MainActivity extends AppCompatActivity {
                         if (location != null) {
                             double latitude = location.getLatitude();
                             double longitude = location.getLongitude();
-                            // Aquí debes guardar los datos en la base de datos
                             saveLocationData(latitude, longitude);
                         } else {
                             textViewResult.setText("No se pudo obtener la ubicación para guardar.");
@@ -128,6 +131,13 @@ public class MainActivity extends AppCompatActivity {
                     content += "El clima de hoy es " + weatherResponse.getWeather().get(0).getDescription() + "\n";
 
                     textViewResult.setText(content);
+
+                    // Obtén el código del ícono y construye la URL
+                    String iconCode = weatherResponse.getWeather().get(0).getIcon();
+                    String iconUrl = "http://openweathermap.org/img/wn/" + iconCode + ".png";
+
+                    // Usa Picasso para cargar la imagen desde la URL
+                    Picasso.get().load(iconUrl).into(imageViewWeather);
                 }
             }
 
@@ -164,6 +174,13 @@ public class MainActivity extends AppCompatActivity {
                     content += "El clima de hoy es " + weatherResponse.getWeather().get(0).getDescription() + "\n";
 
                     textViewResult.setText(content);
+
+                    // Obtén el código del ícono y construye la URL
+                    String iconCode = weatherResponse.getWeather().get(0).getIcon();
+                    String iconUrl = "http://openweathermap.org/img/wn/" + iconCode + ".png";
+
+                    // Usa Picasso para cargar la imagen desde la URL
+                    Picasso.get().load(iconUrl).into(imageViewWeather);
                 }
             }
 

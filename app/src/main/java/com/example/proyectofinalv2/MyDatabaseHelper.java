@@ -39,7 +39,6 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
                 db.execSQL("ALTER TABLE " + TABLE_NAME + " ADD COLUMN " + COLUMN_LATITUDE + " REAL");
                 db.execSQL("ALTER TABLE " + TABLE_NAME + " ADD COLUMN " + COLUMN_LONGITUDE + " REAL");
             }
-            // Puedes agregar más condiciones para versiones específicas si es necesario
         }
     }
 
@@ -57,7 +56,6 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
         ContentValues contentValues = new ContentValues();
         contentValues.put(COLUMN_LATITUDE, latitude);
         contentValues.put(COLUMN_LONGITUDE, longitude);
-        // Aquí se inserta en la tabla sin identificar un usuario específico
         long result = db.insert(TABLE_NAME, null, contentValues);
         return result != -1;
     }
